@@ -15,7 +15,7 @@ It's a tool for your robot - that can read and handle your electronic mail. The 
 ## Earth Shattering Features
 
 - **Parse email metadata**  Is it an email from your aunt wishing you a happy holidays? Is it your monthly bank statement? *is it your renewal for the premium hub?*  - WHO CARES!?  That's robot work now. 
-- **Extract attachments** with [smart organisation](https://c.tenor.com/6dO29HKTiNIAAAAd/tenor.gif): it takes your emails, it makes a folder, it puts the emais... ***IN THE FOLDER***. *simply incredible*
+- **Extract attachments** with [smart organisation](https://c.tenor.com/6dO29HKTiNIAAAAd/tenor.gif): it takes your emails, it makes a folder, it puts the emails... ***IN THE FOLDER***. *simply incredible*
   - Small files (<10KB) → `small_files/`
   - Documents (PDFs, Office) → `documents/`
   - Images (inline + regular) → `images/`
@@ -25,7 +25,7 @@ It's a tool for your robot - that can read and handle your electronic mail. The 
 
 ## Installation
 
-We use [UV](https://docs.astral.sh/uv/) in this house. ***If you don't like it?*** You can find regular Python instructions below. *i'm not mad, i'm dissapointed*:
+We use [UV](https://docs.astral.sh/uv/) in this house. ***If you don't like it?*** You can find regular Python instructions below. *i'm not mad, i'm disappointed*:
 
 ```bash
 # Install UV (one-liner for Unix/macOS)
@@ -116,7 +116,7 @@ Returns:
 ### Tool 2: `extract_eml_attachments`
 
 Takes files, puts them into folders, *like its PEOPLE!*
-Your bot just fills out this small questionairre;
+Your bot just fills out this small questionnaire;
 
 ```python
 {
@@ -131,23 +131,51 @@ And it gets:
 - List of all extracted files with paths
 - Category breakdown
 - ZIP file path *you can ask it to zip it all up! Wish it was my idea!*
-- Size summaries - Actually very useful if you don't want yout bot pulling a 200,000 token attachment directly into context.
+- Size summaries - Actually very useful if you don't want your bot pulling a 200,000 token attachment directly into context.
 
 ### *"But wait you said it can zip and sort email..."*
 
-***Ah, There's the thing!*** **IT CAN!** Let me tell you about **Tool-bloat** and how your code can acheive more with less!...
+***Ah, There's the thing!*** **IT CAN!** Let me tell you about **Tool-bloat** and how your code can achieve more with less!
 
-`At a later point, but the tl;dr is you can do a lot with good foundandional tools and anchoring instructions without needing to have 20 seperate calls.`
+<!-- CLAUDE_GENERATED_SUGGESTION_START -->
 
+Instead of having separate tools for every tiny action (one for sorting, one for zipping, one for filtering by size, one for...), this MCP uses TWO well-designed tools that can be combined in your instructions:
 
+- `parse_eml` → Preview before you commit
+- `extract_eml_attachments` → Extract, organize, AND zip
+
+**The secret?** The `organize` and `create_zip` parameters! Your AI can decide:
+- "Just dump everything" → `organize: false, create_zip: false`
+- "Sort it properly" → `organize: true, create_zip: false`  
+- "Sort AND zip for easy sharing" → `organize: true, create_zip: true`
+
+This means you get 6+ potential workflows from 2 tools instead of needing 6 separate tool calls. Less tool-bloat, more flexibility, cleaner code.
+
+**Translation:** Good foundational tools + smart parameters > 20 hyper-specific tools that do one thing each.
+
+<!-- CLAUDE_GENERATED_SUGGESTION_END -->
 
 ## Example Workflow
-*you need to tell it how you want it to use the tool, some assembly required.
 
-1. **Preview email**: Uses `parse_eml` to take a whiff of whats inside!
-2. **Decide**:  Decides if it likes the smell or not.
-3. **Extract**: Use `extract_eml_attachments` to pour our the .eml into its sandbox and organize them into neat lil boxes.
-4. **Analyze**: The dingus can now summarise your email! ... *maybe*
+<!-- CLAUDE_GENERATED_SUGGESTION_START -->
+
+**The MCP doesn't assume how you want to work—you tell it:**
+
+```plaintext
+"Hey Claude, there's a suspicious email at suspicious.eml. 
+Can you preview it first, tell me if it looks legit, 
+then extract any attachments to a folder called 'dodgy_stuff' 
+but DON'T open any executables."
+```
+
+1. **Preview email**: Uses `parse_eml` to check sender, subject, attachment types
+2. **Decide**: AI evaluates if it looks safe based on metadata
+3. **Extract**: Uses `extract_eml_attachments` to sort files into categories
+4. **Analyze**: AI can now safely examine non-executable files and summarize
+
+*Some assembly required—but that's the beauty of it. YOUR workflow, not ours.*
+
+<!-- CLAUDE_GENERATED_SUGGESTION_END -->
 
 ## TELL ME ABOUT THE ENDLESS POSSIBILITIES
 
@@ -167,7 +195,7 @@ Just run `uv pip install -e .` sit back, and then sit back up again because uv i
 
 ## Can I Use Regular Python instead of uv?
 
-*i mean yeah i guess* Just replace the uv commands with Pythton/venv/pip. 
+*i mean yeah i guess* Just replace the uv commands with Python/venv/pip. 
 
 ```bash
 python -m venv .venv
@@ -202,23 +230,23 @@ Vibe coding is amazing for translating code to English! But at the end of the da
 - `Create spaghetti code at best`
 - `Remove useful code constantly at worst`
 
-This was a case of of me having a simple problem, I could have made this MCP with a single prompt and have been done with it, but because I listened to what actual programmers advice, I contunued to refine it, The initial version used an entirely different email parsing dependency called `eml-extractor`, which wasnt working in my use case at all, so I searched the hub and that got replaced with `eml_parser`. Eventually 4 tool calls became 2, and it all happened though *"augmented AI use"*. 
+This was a case of me having a simple problem, I could have made this MCP with a single prompt and have been done with it, but because I listened to what actual programmers advice, I continued to refine it. The initial version used an entirely different email parsing dependency called `eml-extractor`, which wasn't working in my use case at all, so I searched the hub and that got replaced with `eml_parser`. Eventually 4 tool calls became 2, and it all happened though *"augmented AI use"*. 
 
 [Anthropic is looking heavily into Augmentation vs Automation, you can read more here!](https://www.anthropic.com/research/anthropic-economic-index-september-2025-report)
 
 But in short;
-- `Augmentation is a back and fourth collaboration`
+- `Augmentation is a back and forth collaboration`
 - `Automation is a 'set it and forget it' system`
 
-**Here's what they dont tell you:** ***both are totally valid methods of creating code***
+**Here's what they don't tell you:** ***both are totally valid methods of creating code***
 
 You will only get out what you put in, I have spent entire **DAYS** *augmenting* a prompt with one model, to then *automate* a second AI to code it autonomously.
 
-So yeah, vibe coding is easy! I mean the *only* problems ive had
+So yeah, vibe coding is easy! I mean the *only* problems I've had
 The only issues during vibe coding this tiny MCP:
-1. First wrote the entire thing with filessystem one file at a time instead of using my custom sandbox (*coming soon, hide your dingus-bots*) that was literally designed for making stuff like this... 
-2. Installed the entirely wrong MCP dependancy *almost making it incompatible with its actual purpose*
-3. Suggested the wrong dependancies from the onset leading to a total restructure midway.
+1. First wrote the entire thing with filesystem one file at a time instead of using my custom sandbox (*coming soon, hide your dingus-bots*) that was literally designed for making stuff like this... 
+2. Installed the entirely wrong MCP dependency *almost making it incompatible with its actual purpose*
+3. Suggested the wrong dependencies from the onset leading to a total restructure midway.
 4. Kept trying install features the Claude sandbox would not permit.
 5. Repeatedly reversed the load order causing the initial install to fail - *between trying to delete all my other MCP links*...
 6. Literally forgot what a file structure was and spent a few minutes in a loop wondering what `/mnt/` meant.
@@ -242,7 +270,7 @@ The only issues during vibe coding this tiny MCP:
 
 ###     Addendum
      
-             This MCP server primairily utilizes the following dependencies:
+             This MCP server primarily utilizes the following dependencies:
      - [eml_parser](https://github.com/GOVCERT-LU/eml_parser) - **GNU GPL License** - Core email parsing engine
      - [FastMCP](https://github.com/jlowin/fastmcp) - **Apache 2.0 License** - MCP server framework
      
