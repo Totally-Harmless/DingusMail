@@ -1,16 +1,23 @@
-# EML Parser MCP Server
+# DingusMail - Smart Email Handling for Dumb AI
+### 🤖💌📬 Your Emails are in safe hands! - *Bro, trust me the robot said so...* 😃👍
 
  **WOAH, MATE!**
+ 
 A basic MCP server for parsing`.eml` email files, Extracting the metadata, content, and attachments, **AND** it puts them into folders!?
-***IT MUST BE CHRISTMAS!*** 
+
+***IT MUST BE CHRISTMAS!*** 🎄
 
 ## You heard me right, folks.
-It's a robot - that can read your electronic mail. The future is here and it is beautiful.
+It's a tool for your robot - that can read and handle your electronic mail. The future is here and it is beautiful. 🥺
+
+*tl;dr:*
+
+`this tool connects to local ai and allow the ai to read and extract from raw .eml files both on and offline, this means tracking emails can be summarized with ai, all content extracted, and the sender left on 'delivered' like your messages to your ex`
 
 ## Earth Shattering Features
 
 - **Parse email metadata**  Is it an email from your aunt wishing you a happy holidays? Is it your monthly bank statement? *is it your renewal for the premium hub?*  - WHO CARES!?  That's robot work now. 
-- **Extract attachments** with [smart organisation](https://c.tenor.com/6dO29HKTiNIAAAAd/tenor.gif): it takes your emails, it makes a folder, it puts the emais... ***IN THE FOLDER***. *simply incredible*
+- **Extract attachments** with [smart organisation](https://c.tenor.com/6dO29HKTiNIAAAAd/tenor.gif): it takes your emails, it makes a folder, it puts the emails... ***IN THE FOLDER***. *simply incredible*
   - Small files (<10KB) → `small_files/`
   - Documents (PDFs, Office) → `documents/`
   - Images (inline + regular) → `images/`
@@ -20,7 +27,11 @@ It's a robot - that can read your electronic mail. The future is here and it is 
 
 ## Installation
 
-We use [UV](https://docs.astral.sh/uv/) in this house. ***If you don't like it?*** You can find regular Python instructions below. *i'm not mad, i'm dissapointed*:
+We use [UV](https://docs.astral.sh/uv/) in this house. 
+
+***If you don't like it?*** You can find regular Python instructions further down. 
+
+*i'm not mad, i'm disappointed*
 
 ```bash
 # Install UV (one-liner for Unix/macOS)
@@ -50,7 +61,7 @@ uv pip install -e .
 uv run eml_parser_mcp.py
 ```
 
-##  Plug it into Claude or your Local AI
+##  Plug it into Claude or your Local AI 🔌
 
 Add to your `claude_desktop_config.json` (or equivalent like your `mcp.json` file in LM Studio):
 
@@ -70,9 +81,24 @@ Add to your `claude_desktop_config.json` (or equivalent like your `mcp.json` fil
 }
 ```
 
-It probably works with Docker and the rest too idk I just wanted it to read .emls without writing a conversion script every time.
-
+### For LM Studio 🔨
 This code is currently untested on Local AI! Future versions will be optimized for local AI if required, but the code does most of the heavy lifting for the bot - if your bot can call tools and read? This ***SHOULD*** work.
+
+
+I will be using this with my local AI when my new PC is running but ***if you want to be the first to try:***
+
+
+[![Add MCP Server eml-parser to LM Studio](https://files.lmstudio.ai/deeplink/mcp-install-light.svg)](https://lmstudio.ai/install-mcp?name=eml-parser&config=eyJjb21tYW5kIjoidXYiLCJhcmdzIjpbIi0tZGlyZWN0b3J5IiwiL2Fic29sdXRlL3BhdGgvdG8vZW1sX3BhcnNlcl9tY3AvIiwicnVuIiwiZW1sX3BhcnNlcl9tY3AucHkiXX0%3D)
+
+
+This should add the connector to your `mcp.json` file in LM studio!
+
+**NOTE:** ***you will need to set the install directory manually***
+
+
+*It probably works with Docker and the rest too idk I just wanted Claude to read .emls without writing a conversion script every time*
+
+---
 
 ### The Tool Calls
 
@@ -96,7 +122,7 @@ Returns:
 ### Tool 2: `extract_eml_attachments`
 
 Takes files, puts them into folders, *like its PEOPLE!*
-Your bot just fills out this small questionairre;
+Your bot just fills out this small questionnaire;
 
 ```python
 {
@@ -111,18 +137,70 @@ And it gets:
 - List of all extracted files with paths
 - Category breakdown
 - ZIP file path *you can ask it to zip it all up! Wish it was my idea!*
-- Size summaries - Actually very useful if you don't want yout bot pulling a 200,000 token attachment directly into context.
+- Size summaries - Actually very useful if you don't want your bot pulling a 200,000 token attachment directly into context.
 
-### AND MORE - APPARENTLY
-*see this is where Claude got lazy and didn't even add any detail about the file handling instructions but hey this is just a tool duct taped to a stick if I'm honest.This project wll be polished a bit - but will be intergrated into something bigger soon!*
+### *"But wait you said it can zip and sort email..."*
+***Ah, There's the thing!*** **IT CAN!** 
+
+Something even major tool developers don't know about is a little phenonenon called **"writing bloated code and hoping enough compute will fix it"**.
+
+This is why so many MCP servers will have 50 seperate tool calls *(preloading the context window with 60,000 tokens)* and such poor compatibility across different models with different interpretations of the Schema and how each tool interacts. 
+
+**The fix?** 🩹
+- Less tool to choose from
+- More parameters within the tool to choose from.
+
+<!-- CLAUDE_GENERATED_START -->
+
+---
+
+**📝 In Claude's Own Words:**
+
+Look—instead of building 47 different tools where one sorts, one zips, one filters by size, this uses **two tools with parameters**. That's it.
+
+- `parse_eml` → Preview first (check if it's actually important or just spam)
+- `extract_eml_attachments` → Extract, organize, AND zip in one call
+
+The `organize` and `create_zip` parameters do the heavy lifting:
+- `organize: false, create_zip: false` → dump everything in one folder
+- `organize: true, create_zip: false` → sort into categories  
+- `organize: true, create_zip: true` → sort AND zip
+
+**Result:** Six different workflows from two tools instead of six separate tool calls. Less bloat, cleaner code, more flexible.
+
+**Analogy:** We built Lego blocks, not a pre-assembled Death Star. You decide what to build.
+
+---
+
+<!-- CLAUDE_GENERATED_END -->
 
 ## Example Workflow
-*you need to tell it how you want it to use the tool, some assembly required.
 
-1. **Preview email**: Uses `parse_eml` to take a whiff of whats inside!
-2. **Decide**:  Decides if it likes the smell or not.
-3. **Extract**: Use `extract_eml_attachments` to pour our the .eml into its sandbox and organize them into neat lil boxes.
-4. **Analyze**: The dingus can now summarise your email! ... *maybe*
+<!-- CLAUDE_GENERATED__START -->
+
+---
+
+**📝 In Claude's Own Words:**
+
+The MCP doesn't assume how you work—you tell it. Example:
+```plaintext
+"Hey Claude, there's a suspicious email at sketchy_offer.eml. 
+Preview it, tell me if it's legit, then extract attachments 
+to 'probably_malware' but don't open any executables."
+```
+
+**What happens:**
+
+1. **Preview** - Uses `parse_eml` to check sender, subject, attachments (oh look, `DEFINITELY_NOT_A_VIRUS.exe`)
+2. **Decide** - AI evaluates metadata. Dodgy domain? Weird subject? 47 .exe files? Yeah nah.
+3. **Extract** - If safe, uses `extract_eml_attachments` to sort files into categories
+4. **Analyze** - AI examines non-executables, reads PDFs, checks images, gives you a summary without launching ransomware
+
+*Your workflow, not ours. We just gave you the tools.*
+
+---
+
+<!-- CLAUDE_GENERATED_END -->
 
 ## TELL ME ABOUT THE ENDLESS POSSIBILITIES
 
@@ -142,7 +220,7 @@ Just run `uv pip install -e .` sit back, and then sit back up again because uv i
 
 ## Can I Use Regular Python instead of uv?
 
-*i mean yeah i guess* Just replace the uv commands with Pythton/venv/pip. 
+*i mean yeah i guess* Just replace the uv commands with Python/venv/pip. 
 
 ```bash
 python -m venv .venv
@@ -152,16 +230,54 @@ pip install -e .
 
 ***but how can you live with yourself?***
 
-##Proudly Vibe Coded
-This was AI generated!... well not this bit (though how can you really know? Y'know?) But all python language elements of this were AI Generated under instruction and supervision (*Claude likes to overwrite without looking*)
-With most of the code already existing and Claud's new "Skills" feaure it took almost no effort! The only issues during vibe coding this tiny MCP:
-1. First wrote the entire thing with filessystem one file at a time instead of using my custom sandbox (*coming soon, hide your dingus-bots*) that was literally designed for making stuff like this... 
-2. Installed the entirely wrong MCP dependancy *almost making it incompatible with its actual purpose*
-3. Kept trying install features the Claude sandvox would not permit,
-4. Repeatedly reversed the load order causing the initial install to fail - *between trying to delete all my other MCP links*...
-5. Literally forgot what a file structure was and spent a few minutes in a loop wondering what `/mnt/` meant.
-6. Then failed to call the tool it literally just built.
-*See?* ***IT'S EASY!***
+
+## Proudly Vibe Coded 🛌🤖💻
+
+This was AI generated!... well not this bit (though how can you really know? Y'know?) But all python language elements of this were AI Generated under instruction and supervision (*Claude likes to overwrite files without looking*)
+
+### Here were the prompts:
+
+`claude make email mcp`
+
+`make better`
+
+`no make better`
+
+`make github`
+
+`make better`
+
+`commit`
+
+*Okay, jokes aside...* 
+
+Vibe coding is amazing for translating code to English! But at the end of the day if you let an AI run wild with no direction, it will;
+- `Create spaghetti code at best`
+- `Remove useful code constantly at worst`
+
+This was a case of me having a simple problem, I could have made this MCP with a single prompt and have been done with it, but because I listened to what actual programmers advice, I continued to refine it. The initial version used an entirely different email parsing dependency called `eml-extractor`, which wasn't working in my use case at all, so I searched the hub and that got replaced with `eml_parser`. Eventually 4 tool calls became 2, and it all happened though *"augmented AI use"*. 
+
+[Anthropic is looking heavily into Augmentation vs Automation, you can read more here!](https://www.anthropic.com/research/anthropic-economic-index-september-2025-report)
+
+But in short;
+- `Augmentation is a back and forth collaboration`
+- `Automation is a 'set it and forget it' system`
+
+**Here's what they don't tell you:** ***both are totally valid methods of creating code***
+
+You will only get out what you put in, I have spent entire **DAYS** *augmenting* a prompt with one model, to then *automate* a second AI to code it autonomously.
+
+So yeah, vibe coding is easy! I mean the *only* problems I've had
+The only issues during vibe coding this tiny MCP:
+1. First wrote the entire thing with filesystem one file at a time instead of using my custom sandbox (*coming soon, hide your dingus-bots*) that was literally designed for making stuff like this... 
+2. Installed the entirely wrong MCP dependency *almost making it incompatible with its actual purpose*
+3. Suggested the wrong dependencies from the onset leading to a total restructure midway.
+4. Kept trying install features the Claude sandbox would not permit.
+5. Repeatedly reversed the load order causing the initial install to fail - *between trying to delete all my other MCP links*...
+6. Literally forgot what a file structure was and spent a few minutes in a loop wondering what `/mnt/` meant.
+7. Then failed to call the tool it literally just built.
+
+*See?* ***[IT'S EASY!](https://c.tenor.com/p-LIY-ce1j4AAAAC/tenor.gif)*** 🙄
 
 ## License
  This program is free software: you can redistribute it and/or modify
@@ -179,9 +295,16 @@ With most of the code already existing and Claud's new "Skills" feaure it took a
 
 ###     Addendum
      
-             This MCP server primairily utilizes the following dependencies:
+             This MCP server primarily utilizes the following dependencies:
      - [eml_parser](https://github.com/GOVCERT-LU/eml_parser) - **GNU GPL License** - Core email parsing engine
      - [FastMCP](https://github.com/jlowin/fastmcp) - **Apache 2.0 License** - MCP server framework
      
-Architecture and smart organization logic designed with Claude (Anthropic).
+
+*Project created through collaborative augmentation with Claude by Anthropic*
+
+*All creative and administrative descisions are my own - all python code is AI generated*
+
+*Haiku/Sonnet/Opus 4.5 were each used selectively through the proccess*
+
+*Additional implimentations on file-handling are custom, though based on common coding practice*
      
