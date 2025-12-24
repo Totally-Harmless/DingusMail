@@ -1,8 +1,10 @@
 # DingusMail - Smart Email Handling for Dumb AI
-### 🤖💌📬 *Your email is in ***GREAT*** hands!* 😃👍
+### 🤖💌📬 Your Emails are in safe hands! - *Bro, trust me the robot said so...* 😃👍
 
  **WOAH, MATE!**
+ 
 A basic MCP server for parsing`.eml` email files, Extracting the metadata, content, and attachments, **AND** it puts them into folders!?
+
 ***IT MUST BE CHRISTMAS!*** 🎄
 
 ## You heard me right, folks.
@@ -25,7 +27,11 @@ It's a tool for your robot - that can read and handle your electronic mail. The 
 
 ## Installation
 
-We use [UV](https://docs.astral.sh/uv/) in this house. ***If you don't like it?*** You can find regular Python instructions below. *i'm not mad, i'm disappointed*:
+We use [UV](https://docs.astral.sh/uv/) in this house. 
+
+***If you don't like it?*** You can find regular Python instructions further down. 
+
+*i'm not mad, i'm disappointed*
 
 ```bash
 # Install UV (one-liner for Unix/macOS)
@@ -75,7 +81,7 @@ Add to your `claude_desktop_config.json` (or equivalent like your `mcp.json` fil
 }
 ```
 
-### For LM studio 🔨
+### For LM Studio 🔨
 This code is currently untested on Local AI! Future versions will be optimized for local AI if required, but the code does most of the heavy lifting for the bot - if your bot can call tools and read? This ***SHOULD*** work.
 
 
@@ -134,48 +140,67 @@ And it gets:
 - Size summaries - Actually very useful if you don't want your bot pulling a 200,000 token attachment directly into context.
 
 ### *"But wait you said it can zip and sort email..."*
+***Ah, There's the thing!*** **IT CAN!** 
 
-***Ah, There's the thing!*** **IT CAN!** Let me tell you about **Tool-bloat** and how your code can achieve more with less!
+Something even major tool developers don't know about is a little phenonenon called **"writing bloated code and hoping enough compute will fix it"**.
 
-<!-- CLAUDE_GENERATED_SUGGESTION_START -->
+This is why so many MCP servers will have 50 seperate tool calls *(preloading the context window with 60,000 tokens)* and such poor compatibility across different models with different interpretations of the Schema and how each tool interacts. 
 
-Instead of having separate tools for every tiny action (one for sorting, one for zipping, one for filtering by size, one for...), this MCP uses TWO well-designed tools that can be combined in your instructions:
+**The fix?** 🩹
+- Less tool to choose from
+- More parameters within the tool to choose from.
 
-- `parse_eml` → Preview before you commit
-- `extract_eml_attachments` → Extract, organize, AND zip
+<!-- CLAUDE_GENERATED_START -->
 
-**The secret?** The `organize` and `create_zip` parameters! Your AI can decide:
-- "Just dump everything" → `organize: false, create_zip: false`
-- "Sort it properly" → `organize: true, create_zip: false`  
-- "Sort AND zip for easy sharing" → `organize: true, create_zip: true`
+---
 
-This means you get 6+ potential workflows from 2 tools instead of needing 6 separate tool calls. Less tool-bloat, more flexibility, cleaner code.
+**📝 In Claude's Own Words:**
 
-**Translation:** Good foundational tools + smart parameters > 20 hyper-specific tools that do one thing each.
+Look—instead of building 47 different tools where one sorts, one zips, one filters by size, this uses **two tools with parameters**. That's it.
 
-<!-- CLAUDE_GENERATED_SUGGESTION_END -->
+- `parse_eml` → Preview first (check if it's actually important or just spam)
+- `extract_eml_attachments` → Extract, organize, AND zip in one call
+
+The `organize` and `create_zip` parameters do the heavy lifting:
+- `organize: false, create_zip: false` → dump everything in one folder
+- `organize: true, create_zip: false` → sort into categories  
+- `organize: true, create_zip: true` → sort AND zip
+
+**Result:** Six different workflows from two tools instead of six separate tool calls. Less bloat, cleaner code, more flexible.
+
+**Analogy:** We built Lego blocks, not a pre-assembled Death Star. You decide what to build.
+
+---
+
+<!-- CLAUDE_GENERATED_END -->
 
 ## Example Workflow
 
-<!-- CLAUDE_GENERATED_SUGGESTION_START -->
+<!-- CLAUDE_GENERATED__START -->
 
-**The MCP doesn't assume how you want to work—you tell it:**
+---
 
+**📝 In Claude's Own Words:**
+
+The MCP doesn't assume how you work—you tell it. Example:
 ```plaintext
-"Hey Claude, there's a suspicious email at suspicious.eml. 
-Can you preview it first, tell me if it looks legit, 
-then extract any attachments to a folder called 'dodgy_stuff' 
-but DON'T open any executables."
+"Hey Claude, there's a suspicious email at sketchy_offer.eml. 
+Preview it, tell me if it's legit, then extract attachments 
+to 'probably_malware' but don't open any executables."
 ```
 
-1. **Preview email**: Uses `parse_eml` to check sender, subject, attachment types
-2. **Decide**: AI evaluates if it looks safe based on metadata
-3. **Extract**: Uses `extract_eml_attachments` to sort files into categories
-4. **Analyze**: AI can now safely examine non-executable files and summarize
+**What happens:**
 
-*Some assembly required—but that's the beauty of it. YOUR workflow, not ours.*
+1. **Preview** - Uses `parse_eml` to check sender, subject, attachments (oh look, `DEFINITELY_NOT_A_VIRUS.exe`)
+2. **Decide** - AI evaluates metadata. Dodgy domain? Weird subject? 47 .exe files? Yeah nah.
+3. **Extract** - If safe, uses `extract_eml_attachments` to sort files into categories
+4. **Analyze** - AI examines non-executables, reads PDFs, checks images, gives you a summary without launching ransomware
 
-<!-- CLAUDE_GENERATED_SUGGESTION_END -->
+*Your workflow, not ours. We just gave you the tools.*
+
+---
+
+<!-- CLAUDE_GENERATED_END -->
 
 ## TELL ME ABOUT THE ENDLESS POSSIBILITIES
 
@@ -252,7 +277,7 @@ The only issues during vibe coding this tiny MCP:
 6. Literally forgot what a file structure was and spent a few minutes in a loop wondering what `/mnt/` meant.
 7. Then failed to call the tool it literally just built.
 
-*See?* ***IT'S EASY!***
+*See?* ***[IT'S EASY!](https://c.tenor.com/p-LIY-ce1j4AAAAC/tenor.gif)*** 🙄
 
 ## License
  This program is free software: you can redistribute it and/or modify
@@ -274,5 +299,12 @@ The only issues during vibe coding this tiny MCP:
      - [eml_parser](https://github.com/GOVCERT-LU/eml_parser) - **GNU GPL License** - Core email parsing engine
      - [FastMCP](https://github.com/jlowin/fastmcp) - **Apache 2.0 License** - MCP server framework
      
-Architecture and smart organization logic designed with Claude (Anthropic).
+
+*Project created through collaborative augmentation with Claude by Anthropic*
+
+*All creative and administrative descisions are my own - all python code is AI generated*
+
+*Haiku/Sonnet/Opus 4.5 were each used selectively through the proccess*
+
+*Additional implimentations on file-handling are custom, though based on common coding practice*
      
